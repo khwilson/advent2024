@@ -1,11 +1,16 @@
 from pathlib import Path
 
 
-def part1(data_file: str | Path) -> int | str:
+def read_data(data_file: str | Path) -> None:
     with open(data_file, "rt") as infile:
-        return 10
+        pass
+
+
+def part1(data_file: str | Path) -> int | str:
+    data = read_data(data_file)
+    return 10
 
 
 def part2(data_file: str | Path) -> int | str:
-    with open(data_file, "rt") as infile:
-        return 10
+    data = read_data(data_file)
+    return 10
