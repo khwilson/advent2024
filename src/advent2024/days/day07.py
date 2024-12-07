@@ -12,10 +12,6 @@ def read_data(data_file: str | Path) -> None:
     return out
 
 
-def prod(l: list[int]) -> int:
-    return reduce(operator.__mul__, l, 1)
-
-
 def is_doable(val: int, nums: list[int]) -> bool:
     # Empty lists are ambiguous and don't occur
     # Base case is length 1
