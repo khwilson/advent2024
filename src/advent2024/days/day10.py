@@ -34,11 +34,19 @@ def part1(data_file: str | Path, is_part2: bool = False) -> int | str:
                 if data[ii][jj] == data[i][j] + 1:
                     g.add_edge((i, j), (ii, jj))
 
-    zeros = [(i, j) for i in range(num_rows) for j in range(num_cols) if data[i][j] == 0]
-    nines = [(i, j) for i in range(num_rows) for j in range(num_cols) if data[i][j] == 9]
+    zeros = [
+        (i, j) for i in range(num_rows) for j in range(num_cols) if data[i][j] == 0
+    ]
+    nines = [
+        (i, j) for i in range(num_rows) for j in range(num_cols) if data[i][j] == 9
+    ]
 
     total = 0
-    func = (lambda g, z, n: sum(1 for _ in nx.all_simple_paths(g, z, n))) if is_part2 else nx.has_path
+    func = (
+        (lambda g, z, n: sum(1 for _ in nx.all_simple_paths(g, z, n)))
+        if is_part2
+        else nx.has_path
+    )
     for zero in zeros:
         for nine in nines:
             total += func(g, zero, nine)

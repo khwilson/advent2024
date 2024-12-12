@@ -44,6 +44,7 @@ def part1(data_file: str | Path) -> int | str:
 
     return checksum
 
+
 def part2(data_file: str | Path) -> int | str:
     data = read_data(data_file)
     return 10
