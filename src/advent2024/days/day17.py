@@ -1,7 +1,7 @@
+import re
 from copy import copy
 from enum import IntEnum
 from pathlib import Path
-import re
 
 
 class Inst(IntEnum):
@@ -14,9 +14,16 @@ class Inst(IntEnum):
     BDV = 6
     CDV = 7
 
-class State:
 
-    def __init__(self, reg_a: int, reg_b: int, reg_c: int, instructions: list[tuple[int, int]], instr_ptr: int = 0):
+class State:
+    def __init__(
+        self,
+        reg_a: int,
+        reg_b: int,
+        reg_c: int,
+        instructions: list[tuple[int, int]],
+        instr_ptr: int = 0,
+    ):
         self.reg_a = reg_a
         self.reg_b = reg_b
         self.reg_c = reg_c
@@ -38,7 +45,7 @@ class State:
                 self.instr_ptr += 1
 
             case (Inst.BST, op):
-                self.reg_b = (self.resolve_combo(op) & 7)
+                self.reg_b = self.resolve_combo(op) & 7
                 self.instr_ptr += 1
 
             case (Inst.JNZ, op):
@@ -90,6 +97,7 @@ def read_data(data_file: str | Path) -> tuple[int, int, int, list[tuple[int, int
 
         return reg_a, reg_b, reg_c, instructions
 
+
 def part1(data_file: str | Path) -> int | str:
     reg_a, reg_b, reg_c, instructions = read_data(data_file)
     state = State(reg_a, reg_b, reg_c, instructions)
@@ -119,7 +127,7 @@ def part2(data_file: str | Path) -> int | str:
             state = State((reg_a << 3) | val, 0, 0, instructions)
             while state.do():
                 pass
-            if state.output == flat_instr[-j - 1:]:
+            if state.output == flat_instr[-j - 1 :]:
                 reg_a = (reg_a << 3) | val
                 break
 
