@@ -3,7 +3,9 @@ from pathlib import Path
 from typing import Counter
 
 
-def read_data(data_file: str | Path) -> tuple[dict[str, str], list[tuple[str, str, str, str]]]:
+def read_data(
+    data_file: str | Path,
+) -> tuple[dict[str, str], list[tuple[str, str, str, str]]]:
     on_reg = True
     regs: dict[str, int] = {}
 
@@ -44,19 +46,22 @@ def do(l: int, op: str, r: int) -> int:
 
 
 def run_circuit(x: int, y: int, instrs) -> int:
-    regs = {
-        f"x{i:02d}": int(bool(x & (1 << i))) for i in range(45)
-    } | {
+    regs = {f"x{i:02d}": int(bool(x & (1 << i))) for i in range(45)} | {
         f"y{i:02d}": int(bool(y & (1 << i))) for i in range(45)
     }
 
-    target_to_input = {
-        target: (l, op, r)
-        for l, op, r, target in instrs
-    }
+    target_to_input = {target: (l, op, r) for l, op, r, target in instrs}
 
-    z_regs = {name for name in regs if name[0] == "z" and name[1].isdigit() and name[2].isdigit()}
-    z_regs |= {name for name in target_to_input if name[0] == "z" and name[1].isdigit() and name[2].isdigit()}
+    z_regs = {
+        name
+        for name in regs
+        if name[0] == "z" and name[1].isdigit() and name[2].isdigit()
+    }
+    z_regs |= {
+        name
+        for name in target_to_input
+        if name[0] == "z" and name[1].isdigit() and name[2].isdigit()
+    }
 
     for z_reg in z_regs:
         stack: list[str] = [z_reg]
@@ -83,13 +88,18 @@ def part1(data_file: str | Path) -> int | str:
     # Make sure each register appears as exactly one target
     assert all(x == 1 for x in Counter(y[-1] for y in instrs).values())
 
-    target_to_input = {
-        target: (l, op, r)
-        for l, op, r, target in instrs
-    }
+    target_to_input = {target: (l, op, r) for l, op, r, target in instrs}
 
-    z_regs = {name for name in regs if name[0] == "z" and name[1].isdigit() and name[2].isdigit()}
-    z_regs |= {name for name in target_to_input if name[0] == "z" and name[1].isdigit() and name[2].isdigit()}
+    z_regs = {
+        name
+        for name in regs
+        if name[0] == "z" and name[1].isdigit() and name[2].isdigit()
+    }
+    z_regs |= {
+        name
+        for name in target_to_input
+        if name[0] == "z" and name[1].isdigit() and name[2].isdigit()
+    }
 
     for z_reg in z_regs:
         stack: list[str] = [z_reg]
@@ -116,12 +126,13 @@ def part2(data_file: str | Path) -> int | str:
     # Make sure each register appears as exactly one target
     assert all(x == 1 for x in Counter(y[-1] for y in instrs).values())
 
-    target_to_input = {
-        target: (l, op, r)
-        for l, op, r, target in instrs
-    }
+    target_to_input = {target: (l, op, r) for l, op, r, target in instrs}
 
-    z_regs = {name for name in target_to_input if name[0] == "z" and name[1].isdigit() and name[2].isdigit()}
+    z_regs = {
+        name
+        for name in target_to_input
+        if name[0] == "z" and name[1].isdigit() and name[2].isdigit()
+    }
 
     # We're going to assume this is just supposed to be a standard adder circuit
     # that's reasonably well organized
