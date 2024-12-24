@@ -128,12 +128,6 @@ def part2(data_file: str | Path) -> int | str:
 
     target_to_input = {target: (l, op, r) for l, op, r, target in instrs}
 
-    z_regs = {
-        name
-        for name in target_to_input
-        if name[0] == "z" and name[1].isdigit() and name[2].isdigit()
-    }
-
     # We're going to assume this is just supposed to be a standard adder circuit
     # that's reasonably well organized
     #
