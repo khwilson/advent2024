@@ -143,6 +143,7 @@ def part2(data_file: str | Path) -> int | str:
             markers[int(l[1:])] = target
     assert all(markers.values())
 
+    # Ditto, there should be exactly one xDD AND yDD
     and_markers = {i: None for i in range(max_reg + 1)}
     for l, op, r, target in instrs:
         if l in regs and r in regs and l[1:] == r[1:] and op == Op.AND:
