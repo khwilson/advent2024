@@ -81,5 +81,110 @@ def part1(data_file: str | Path) -> int | str:
 
 
 def part2(data_file: str | Path) -> int | str:
-    data = read_data(data_file)
-    return 10
+    maze, moves = read_data(data_file)
+
+    new_maze: list[list[str]] = []
+    for row in maze:
+        new_row: list[str] = []
+        for val in row:
+            match val:
+                case "#" | ".":
+                    new_row.extend(val * 2)
+                case "O":
+                    new_row.extend("[]")
+                case "@":
+                    new_row.extend("@.")
+                case _:
+                    raise ValueError(f"Invalid: {val}")
+        new_maze.append(new_row)
+    maze = new_maze
+
+    # Get robot position
+    robot: tuple[int, int] | None = None
+    for i, row in enumerate(maze):
+        for j, col in enumerate(row):
+            if col == "@":
+                robot = (i, j)
+                break
+        if robot:
+            break
+
+    # Make stepping easier
+    robot = np.array(list(robot))
+
+    for move in moves:
+        # import ipdb; ipdb.set_trace()
+        direction = {
+            "^": np.array([-1, 0]),
+            "v": np.array([1, 0]),
+            "<": np.array([0, -1]),
+            ">": np.array([0, 1]),
+        }[move]
+
+        next_steps = [robot + direction]
+        to_move = {
+            tuple(robot): ".",
+            tuple(robot + direction): "@",
+        }
+        can_move = True
+        while True:
+            if any(maze[step[0]][step[1]] == "#" for step in next_steps):
+                can_move = False
+                break
+            if all(maze[step[0]][step[1]] == "." for step in next_steps):
+                can_move = True
+                break
+            n_next_steps = []
+            for step in next_steps:
+                if maze[step[0]][step[1]] == "]":
+                    if move in ["^", "v"]:
+                        n_next_steps.append(step + direction)
+                        n_next_steps.append(step + direction + np.array([0, -1]))
+                        to_move.setdefault(tuple(step), ".")
+                        to_move.setdefault(tuple(step + np.array([0, -1])), ".")
+                        to_move.setdefault(tuple(step + direction), "]")
+                        to_move.setdefault(
+                            tuple(step + direction + np.array([0, -1])), "["
+                        )
+                    elif move == "<":
+                        n_next_steps.append(step + direction + direction)
+                        to_move.setdefault(tuple(step), ".")
+                        to_move.setdefault(tuple(step + direction), "]")
+                        to_move.setdefault(tuple(step + direction + direction), "[")
+                    else:
+                        raise ValueError("Can't get here")
+
+                elif maze[step[0]][step[1]] == "[":
+                    if move in ["^", "v"]:
+                        n_next_steps.append(step + direction)
+                        n_next_steps.append(step + direction + np.array([0, 1]))
+                        to_move.setdefault(tuple(step), ".")
+                        to_move.setdefault(tuple(step + np.array([0, 1])), ".")
+                        to_move.setdefault(tuple(step + direction), "[")
+                        to_move.setdefault(
+                            tuple(step + direction + np.array([0, 1])), "]"
+                        )
+                    elif move == ">":
+                        n_next_steps.append(step + direction + direction)
+                        to_move.setdefault(tuple(step), ".")
+                        to_move.setdefault(tuple(step + direction), "[")
+                        to_move.setdefault(tuple(step + direction + direction), "]")
+                    else:
+                        raise ValueError("Can't get here either")
+                else:
+                    # Should have already been caught
+                    pass
+            next_steps = n_next_steps
+
+        if can_move:
+            robot = robot + direction
+            for loc, val in to_move.items():
+                maze[loc[0]][loc[1]] = val
+
+    total = 0
+    for i, row in enumerate(maze):
+        for j, col in enumerate(row):
+            if col == "[":
+                total += 100 * i + j
+
+    return total
