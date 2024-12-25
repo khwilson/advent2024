@@ -80,5 +80,52 @@ def part1(data_file: str | Path) -> int | str:
 
 
 def part2(data_file: str | Path) -> int | str:
-    data = read_data(data_file)
-    return 10
+    maze = read_data(data_file)
+    start_pos: tuple[int, int] = ...
+    end_pos: tuple[int, int] = ...
+    height = len(maze)
+    width = len(maze[0])
+    for i, row in enumerate(maze):
+        for j, val in enumerate(row):
+            if val == "S":
+                start_pos = (i, j)
+            elif val == "E":
+                end_pos = (i, j)
+
+    cur_dir = ">"
+
+    # Cost, pos, dir, path
+    heap = [(0, start_pos, cur_dir, (start_pos,))]
+    seen: dict[tuple[tuple[int, int], str], int] = {}
+    heapq.heapify(heap)
+    min_cost: int | None = None
+    on_paths: set[tuple[int, int]] = {start_pos, end_pos}
+    while heap:
+        cost, pos, cur_dir, path = heapq.heappop(heap)
+        if min_cost is not None and cost > min_cost:
+            return len(on_paths)
+
+        if pos == end_pos:
+            min_cost = cost
+            on_paths |= set(path)
+            continue
+
+        if (pos, cur_dir) in seen and seen[(pos, cur_dir)] < cost:
+            # If you get to a spot with a higher cost, we have to bail
+            continue
+
+        seen[(pos, cur_dir)] = cost
+
+        next_pos = next_step(pos, cur_dir, height, width)
+        if next_pos:
+            if maze[next_pos[0]][next_pos[1]] != "#":
+                heapq.heappush(heap, (cost + 1, next_pos, cur_dir, path + (next_pos,)))
+
+        for turn_dir in turn_dirs[cur_dir]:
+            next_pos = next_step(pos, turn_dir, height, width)
+            if maze[next_pos[0]][next_pos[1]] != "#":
+                heapq.heappush(
+                    heap, (cost + 1000 + 1, next_pos, turn_dir, path + (next_pos,))
+                )
+
+    raise ValueError
