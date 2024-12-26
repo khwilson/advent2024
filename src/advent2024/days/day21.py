@@ -90,7 +90,6 @@ def part2(data_file: str | Path, is_part_one: bool = False) -> int | str:
             for p, q in zip(code, code[1:])
         ]
         all_strs = ["A".join(prod) for prod in its.product(*all_paths)]
-        print(code, all_strs)
         this_total = []
         for ss in all_strs:
             this_total.append(
@@ -99,7 +98,6 @@ def part2(data_file: str | Path, is_part_one: bool = False) -> int | str:
                     for x, y in zip("A" + ss, ss)
                 )
             )
-            print(len(ss), this_total[-1])
 
         totals.append(min(this_total) * int(init_code[:-1]))
 
